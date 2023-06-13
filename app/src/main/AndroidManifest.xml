@@ -12,6 +12,18 @@
         android:theme="@style/Theme.Desainku"
         tools:targetApi="31">
         <activity
+            android:name=".view.admin.DetailDesignServiceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.admin.AddDesignServiceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.admin.NotificationAdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.admin.EditProfileActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.user.HomeUserActivity"
             android:exported="false" />
         <activity
