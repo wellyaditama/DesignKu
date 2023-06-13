@@ -108,7 +108,7 @@ public class RegisterActivity extends AppCompatActivity {
                 }
                 if (!email.matches(emailPattern)) {
                     isFormValid = false;
-                    binding.tiNama.setError("Format email tidak sesuai!");
+                    binding.tiEmail.setError("Format email tidak sesuai!");
                     return;
                 }
                 if (noHp.isEmpty()) {
