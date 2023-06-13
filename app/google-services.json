@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "53655625486",
+    "project_id": "desainku-89860",
+    "storage_bucket": "desainku-89860.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:53655625486:android:5817589e1a2f30c58a015f",
+        "android_client_info": {
+          "package_name": "com.amikom.desainku"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "53655625486-58tujnmhiv73vdii6iue4n7k72pile9v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-LF8e2IXFe1jmwJj1h2orTc8iSekxk9A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "53655625486-58tujnmhiv73vdii6iue4n7k72pile9v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
