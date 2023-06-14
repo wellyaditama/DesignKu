@@ -29,6 +29,7 @@ import com.amikom.desainku.model.DesignServiceModel;
 import com.amikom.desainku.utility.UtilitiesClass;
 import com.amikom.desainku.view.admin.AddDesignServiceActivity;
 import com.amikom.desainku.view.admin.BookDesignActivity;
+import com.amikom.desainku.view.admin.EditDesignServiceActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -55,6 +56,8 @@ public class ServiceAdminFragment extends Fragment {
 
     ProgressDialog progressDialog;
 
+    String userType;
+
 
 
 
@@ -71,7 +74,12 @@ public class ServiceAdminFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentServiceAdminBinding.inflate(inflater, container, false);
+        Bundle bundle = getArguments();
+        userType = bundle.getString("userType");
+
+
         return binding.getRoot();
+
 
     }
 
@@ -216,6 +224,18 @@ public class ServiceAdminFragment extends Fragment {
         optionDialogBinding.tvUpdateReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Intent intent = new Intent(getContext(), EditDesignServiceActivity.class);
+                intent.putExtra("DESIGN_SERVICE", serviceModel);
+                optionDialog.dismiss();
+
+                startActivity(intent);
+
+            }
+        });
+
+        optionDialogBinding.tvBook.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
                 Intent intent = new Intent(getContext(), BookDesignActivity.class);
                 intent.putExtra("DESIGN_SERVICE", serviceModel);
                 optionDialog.dismiss();
@@ -248,6 +268,9 @@ public class ServiceAdminFragment extends Fragment {
             }
         });
 
+
+
+
         designServiceModels = new ArrayList<>();
 
         binding.rvMain.setHasFixedSize(true);
@@ -268,6 +291,18 @@ public class ServiceAdminFragment extends Fragment {
                 detailService.dismiss();
             }
         });
+
+        if(userType.equals("User")) {
+            binding.btnAdminServiceAdd.setVisibility(View.GONE);
+
+            optionDialogBinding.tvDeleteReport.setVisibility(View.GONE);
+            optionDialogBinding.tvUpdateReport.setVisibility(View.GONE);
+        }
+
+        if(userType.equals("Admin")) {
+
+            optionDialogBinding.tvBook.setVisibility(View.GONE);
+        }
 
 //        getDataService();
 

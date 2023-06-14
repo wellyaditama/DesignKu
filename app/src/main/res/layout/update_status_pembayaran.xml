@@ -113,7 +113,7 @@
                         android:textColor="@color/textcolor"
                         android:fontFamily="@font/poppins_regular"
                         android:checked="true"
-                        android:onClick="onRadioStatusPembayaranClicked"/>
+                        android:onClick="onRadioPengerjaanClicked"/>
 
                     <RadioButton
                         android:id="@+id/rb_sudah_dibayar"
@@ -122,7 +122,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="@font/poppins_regular"
                         android:text="Sudah Dibayar"
-                        android:onClick="onRadioStatusPembayaranClicked"/>
+                        android:onClick="onRadioPengerjaanClicked"/>
 
 
                 </RadioGroup>

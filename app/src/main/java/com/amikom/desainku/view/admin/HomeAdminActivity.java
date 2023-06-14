@@ -27,6 +27,8 @@ public class HomeAdminActivity extends AppCompatActivity implements BottomNaviga
     FirebaseAuth mAuth;
     FirebaseUser mUser;
 
+    Bundle mBundle;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +41,14 @@ public class HomeAdminActivity extends AppCompatActivity implements BottomNaviga
         getWindow().setNavigationBarColor(getResources().getColor(R.color.primary3));
 
         binding.bottomNavigationView.setOnNavigationItemSelectedListener(this);
-        binding.bottomNavigationView.setSelectedItemId(R.id.home);
+        binding.bottomNavigationView.setSelectedItemId(R.id.service);
+
+        mBundle = new Bundle();
+        mBundle.putString("userType", "Admin");
+
+        serviceAdminFragment.setArguments(mBundle);
+        bookingAdminFragment.setArguments(mBundle);
+        settingsAdminFragment.setArguments(mBundle);
 
 
 
@@ -55,12 +64,7 @@ public class HomeAdminActivity extends AppCompatActivity implements BottomNaviga
 
 
         switch (item.getItemId()) {
-            case R.id.home:
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.flFragment, homeAdminFragment)
-                        .commit();
-                return true;
+
 
             case R.id.service:
                 getSupportFragmentManager()

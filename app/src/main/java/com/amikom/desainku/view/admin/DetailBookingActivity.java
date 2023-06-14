@@ -7,6 +7,8 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.RadioButton;
+import android.widget.Toast;
 
 import com.amikom.desainku.R;
 import com.amikom.desainku.databinding.ActivityDetailBookingBinding;
@@ -39,7 +41,9 @@ public class DetailBookingActivity extends AppCompatActivity {
     UpdateStatusPembayaranBinding updateStatusPembayaranBinding;
     UpdateStatusPengerjaanBinding updateStatusPengerjaanBinding;
 
-    String statusPembayaran
+    String statusPembayaran;
+    String statusPengerjaan;
+    String userType;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +62,9 @@ public class DetailBookingActivity extends AppCompatActivity {
 
         Intent intent = getIntent();
 
+        statusPembayaran = "1";
+        statusPengerjaan = "1";
+
         registerDialog = new ProgressDialog(this);
         registerDialog.setTitle("Mohon Tunggu");
         registerDialog.setMessage("Mengambil Data...");
@@ -66,8 +73,8 @@ public class DetailBookingActivity extends AppCompatActivity {
 
 
         designBookingModel = (DesignBookingModel) intent.getSerializableExtra("BOOKING_MODEL");
+        userType = intent.getStringExtra("userType");
 
-        getDataJasa(designBookingModel.getIdJasa());
 
         dialogUpdatePembayaran = new Dialog(this, R.style.DialogStyle);
         updateStatusPembayaranBinding = UpdateStatusPembayaranBinding.inflate(getLayoutInflater());
@@ -77,6 +84,10 @@ public class DetailBookingActivity extends AppCompatActivity {
         updateStatusPengerjaanBinding = UpdateStatusPengerjaanBinding.inflate(getLayoutInflater());
         dialogUpdatePengerjaan.setContentView(updateStatusPengerjaanBinding.getRoot());
 
+        if(userType.equals("User")) {
+            binding.btnChangeStatus.setVisibility(View.GONE);
+            binding.btnChangeStatusPembayaran.setVisibility(View.GONE);
+        }
 
 
         binding.btnChangeStatus.setOnClickListener(new View.OnClickListener() {
@@ -84,6 +95,41 @@ public class DetailBookingActivity extends AppCompatActivity {
             public void onClick(View view) {
                 dialogUpdatePembayaran.show();
 
+                updateStatusPembayaranBinding.ifvCloseDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogUpdatePembayaran.dismiss();
+                    }
+                });
+
+                if(designBookingModel.getStatusPembayaran().equals("1")) {
+                    updateStatusPembayaranBinding.rbBelumDibayar.setChecked(true);
+                    statusPembayaran = "1";
+                } else if(designBookingModel.getStatusPembayaran().equals("2")) {
+                    updateStatusPembayaranBinding.rbSudahDibayar.setChecked(true);
+                    statusPembayaran = "2";
+                }
+
+                updateStatusPembayaranBinding.btnSimpan.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        registerDialog.setTitle("Mohon Tunggu");
+                        registerDialog.setMessage("Mengubah Status Pembayaran");
+                        registerDialog.setCanceledOnTouchOutside(false);
+                        registerDialog.show();
+
+                        db.collection("booking").document(designBookingModel.getIdBooking()).update("statusPembayaran", statusPembayaran).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                registerDialog.dismiss();
+                                dialogUpdatePembayaran.dismiss();
+                                Toast.makeText(DetailBookingActivity.this, "Status Pembayaran Berhasil Diubah!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        });
+                    }
+                });
 
             }
         });
@@ -92,6 +138,48 @@ public class DetailBookingActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 dialogUpdatePengerjaan.show();
+
+                updateStatusPengerjaanBinding.ifvCloseDialog.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogUpdatePengerjaan.dismiss();
+                    }
+                });
+
+                if(designBookingModel.getStatusPengerjaan().equals("1")) {
+                    updateStatusPengerjaanBinding.rbDalamPengerjaan.setChecked(true);
+                    statusPengerjaan = "1";
+                } else if(designBookingModel.getStatusPengerjaan().equals("2")) {
+                    updateStatusPengerjaanBinding.rbRevisi.setChecked(true);
+                    statusPengerjaan = "2";
+                } else if(designBookingModel.getStatusPengerjaan().equals("3")) {
+                    updateStatusPengerjaanBinding.rbSelesai.setChecked(true);
+                    statusPengerjaan = "3";
+                } else if(designBookingModel.getStatusPembayaran().equals("4")) {
+                    updateStatusPengerjaanBinding.rbDibatalkan.setChecked(true);
+                    statusPengerjaan = "4";
+                }
+
+                updateStatusPengerjaanBinding.btnSimpan.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        registerDialog.setTitle("Mohon Tunggu");
+                        registerDialog.setMessage("Mengubah Status Pembayaran");
+                        registerDialog.setCanceledOnTouchOutside(false);
+                        registerDialog.show();
+
+                        db.collection("booking").document(designBookingModel.getIdBooking()).update("statusPengerjaan", statusPengerjaan).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                registerDialog.dismiss();
+                                dialogUpdatePengerjaan.dismiss();
+                                Toast.makeText(DetailBookingActivity.this, "Status Pengerjaan Berhasil Diubah!", Toast.LENGTH_SHORT).show();
+                                finish();
+                            }
+                        });
+                    }
+                });
             }
         });
 
@@ -177,4 +265,53 @@ public class DetailBookingActivity extends AppCompatActivity {
         });
     }
 
+
+    public void onRadioPengerjaanClicked(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+
+        switch (view.getId()) {
+            case R.id.rb_dalam_pengerjaan:
+                if (checked)
+                    // Pirates are the best
+                    statusPengerjaan = "1";
+
+                break;
+            case R.id.rb_revisi:
+                if (checked)
+                    // Ninjas rule
+                    statusPengerjaan = "2";
+                break;
+
+            case R.id.rb_selesai:
+                if (checked)
+                    // Ninjas rule
+                    statusPengerjaan = "3";
+                break;
+
+            case R.id.rb_dibatalkan:
+                if (checked)
+                    // Ninjas rule
+                    statusPengerjaan = "4";
+                break;
+
+            case R.id.rb_belum_dibayar:
+                if (checked)
+                    // Pirates are the best
+                    statusPembayaran = "1";
+
+                break;
+            case R.id.rb_sudah_dibayar:
+                if (checked)
+                    // Ninjas rule
+                    statusPembayaran = "2";
+                break;
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getDataJasa(designBookingModel.getIdJasa());
+    }
 }

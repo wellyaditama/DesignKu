@@ -24,6 +24,7 @@ import com.amikom.desainku.databinding.OptionDialogBinding;
 import com.amikom.desainku.model.DesignBookingModel;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -49,6 +50,8 @@ public class BookingListActivity extends AppCompatActivity {
 
     ProgressDialog progressDialog;
 
+    String userType;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,11 +67,23 @@ public class BookingListActivity extends AppCompatActivity {
 
         designBookingModels = new ArrayList<>();
 
+        Intent intent = getIntent();
+
+        userType = intent.getStringExtra("userType");
+
+
         binding.rvMain.setHasFixedSize(true);
         binding.rvMain.setLayoutManager(new LinearLayoutManager(this));
         optionDialog = new Dialog(this, R.style.DialogStyle);
         optionDialogBinding = OptionDialogBinding.inflate(getLayoutInflater());
         optionDialog.setContentView(optionDialogBinding.getRoot());
+
+        if(userType.equals("User")) {
+            optionDialogBinding.tvDeleteReport.setVisibility(View.GONE);
+        }
+            optionDialogBinding.tvBook.setVisibility(View.GONE);
+
+
 
         progressDialog = new ProgressDialog(this);
 
@@ -87,80 +102,159 @@ public class BookingListActivity extends AppCompatActivity {
 
         designBookingModels.clear();
 
-        FirebaseFirestore.getInstance().collection("booking").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                if(!queryDocumentSnapshots.isEmpty()) {
 
-                    List<DocumentSnapshot> bookingList = queryDocumentSnapshots.getDocuments();
-                    for(DocumentSnapshot s : bookingList) {
-                        String idJasa = s.get("idJasa").toString();
-                        String idBooking = s.get("idBooking").toString();
-                        String emailPemesan = s.get("emailPemesan").toString();
-                        String namaPemesan = s.get("namaPemesan").toString();
-                        String noHpPemesan = s.get("noHpPemesan").toString();
-                        String keterangan = s.get("keterangan").toString();
-                        String statusPembayaran = s.get("statusPembayaran").toString();
-                        String statusPengerjaan = s.get("statusPengerjaan").toString();
-                        String dateCreated = s.get("dateCreated").toString();
+        if(userType.equals("User")) {
+            FirebaseFirestore.getInstance().collection("booking").whereEqualTo("emailPemesan", FirebaseAuth.getInstance().getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if (!queryDocumentSnapshots.isEmpty()) {
 
-                        DesignBookingModel dsm = new DesignBookingModel(
-                                idJasa,
-                                idBooking,
-                                emailPemesan,
-                                namaPemesan,
-                                noHpPemesan,
-                                keterangan,
-                                statusPembayaran,
-                                statusPengerjaan,
-                                dateCreated
-                        );
+                        List<DocumentSnapshot> bookingList = queryDocumentSnapshots.getDocuments();
+                        for (DocumentSnapshot s : bookingList) {
+                            String idJasa = s.get("idJasa").toString();
+                            String idBooking = s.get("idBooking").toString();
+                            String emailPemesan = s.get("emailPemesan").toString();
+                            String namaPemesan = s.get("namaPemesan").toString();
+                            String noHpPemesan = s.get("noHpPemesan").toString();
+                            String keterangan = s.get("keterangan").toString();
+                            String statusPembayaran = s.get("statusPembayaran").toString();
+                            String statusPengerjaan = s.get("statusPengerjaan").toString();
+                            String dateCreated = s.get("dateCreated").toString();
 
-                        designBookingModels.add(dsm);
+                            DesignBookingModel dsm = new DesignBookingModel(
+                                    idJasa,
+                                    idBooking,
+                                    emailPemesan,
+                                    namaPemesan,
+                                    noHpPemesan,
+                                    keterangan,
+                                    statusPembayaran,
+                                    statusPengerjaan,
+                                    dateCreated
+                            );
+
+                            designBookingModels.add(dsm);
+                        }
+
+                        showShimmer(false);
+
+                        adapterBookingService = new AdapterBookingService(designBookingModels);
+                        adapterBookingService.setOnClickBookingCallback(bookingModel -> onServiceClickCallback(bookingModel));
+                        binding.rvMain.setAdapter(adapterBookingService);
+
+                        binding.tiEmail.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                adapterBookingService.getFilter().filter(charSequence);
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+
+                            }
+                        });
+
+
+                        adapterBookingService.notifyDataSetChanged();
+                    } else {
+                        showShimmer(false);
+                        Toast.makeText(BookingListActivity.this, "Data Booking Kosong!", Toast.LENGTH_SHORT).show();
+                        adapterBookingService = new AdapterBookingService(designBookingModels);
+                        adapterBookingService.setOnClickBookingCallback(bookingModel -> onServiceClickCallback(bookingModel));
+                        binding.rvMain.setAdapter(adapterBookingService);
+                        adapterBookingService.notifyDataSetChanged();
                     }
-
-                    showShimmer(false);
-
-                    adapterBookingService = new AdapterBookingService(designBookingModels);
-                    adapterBookingService.setOnClickBookingCallback(bookingModel -> onServiceClickCallback(bookingModel));
-                    binding.rvMain.setAdapter(adapterBookingService);
-
-                    binding.tiEmail.addTextChangedListener(new TextWatcher() {
-                        @Override
-                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-                        }
-
-                        @Override
-                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                            adapterBookingService.getFilter().filter(charSequence);
-                        }
-
-                        @Override
-                        public void afterTextChanged(Editable editable) {
-
-                        }
-                    });
-
-
-                    adapterBookingService.notifyDataSetChanged();
-                } else {
-                    showShimmer(false);
-                    Toast.makeText(BookingListActivity.this, "Data Booking Kosong!", Toast.LENGTH_SHORT).show();
-                    adapterBookingService = new AdapterBookingService(designBookingModels);
-                    adapterBookingService.setOnClickBookingCallback(bookingModel -> onServiceClickCallback(bookingModel));
-                    binding.rvMain.setAdapter(adapterBookingService);
-                    adapterBookingService.notifyDataSetChanged();
                 }
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                showShimmer(false);
-                Toast.makeText(BookingListActivity.this, "Gagal mendapatkan data Booking Design! Cek koneksi Internet Anda!", Toast.LENGTH_LONG).show();
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    showShimmer(false);
+                    Toast.makeText(BookingListActivity.this, "Gagal mendapatkan data Booking Design! Cek koneksi Internet Anda!", Toast.LENGTH_LONG).show();
 
-            }
-        });
+                }
+            });
+        } else {
+
+            FirebaseFirestore.getInstance().collection("booking").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+
+                        List<DocumentSnapshot> bookingList = queryDocumentSnapshots.getDocuments();
+                        for (DocumentSnapshot s : bookingList) {
+                            String idJasa = s.get("idJasa").toString();
+                            String idBooking = s.get("idBooking").toString();
+                            String emailPemesan = s.get("emailPemesan").toString();
+                            String namaPemesan = s.get("namaPemesan").toString();
+                            String noHpPemesan = s.get("noHpPemesan").toString();
+                            String keterangan = s.get("keterangan").toString();
+                            String statusPembayaran = s.get("statusPembayaran").toString();
+                            String statusPengerjaan = s.get("statusPengerjaan").toString();
+                            String dateCreated = s.get("dateCreated").toString();
+
+                            DesignBookingModel dsm = new DesignBookingModel(
+                                    idJasa,
+                                    idBooking,
+                                    emailPemesan,
+                                    namaPemesan,
+                                    noHpPemesan,
+                                    keterangan,
+                                    statusPembayaran,
+                                    statusPengerjaan,
+                                    dateCreated
+                            );
+
+                            designBookingModels.add(dsm);
+                        }
+
+                        showShimmer(false);
+
+                        adapterBookingService = new AdapterBookingService(designBookingModels);
+                        adapterBookingService.setOnClickBookingCallback(bookingModel -> onServiceClickCallback(bookingModel));
+                        binding.rvMain.setAdapter(adapterBookingService);
+
+                        binding.tiEmail.addTextChangedListener(new TextWatcher() {
+                            @Override
+                            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                            }
+
+                            @Override
+                            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                                adapterBookingService.getFilter().filter(charSequence);
+                            }
+
+                            @Override
+                            public void afterTextChanged(Editable editable) {
+
+                            }
+                        });
+
+
+                        adapterBookingService.notifyDataSetChanged();
+                    } else {
+                        showShimmer(false);
+                        Toast.makeText(BookingListActivity.this, "Data Booking Kosong!", Toast.LENGTH_SHORT).show();
+                        adapterBookingService = new AdapterBookingService(designBookingModels);
+                        adapterBookingService.setOnClickBookingCallback(bookingModel -> onServiceClickCallback(bookingModel));
+                        binding.rvMain.setAdapter(adapterBookingService);
+                        adapterBookingService.notifyDataSetChanged();
+                    }
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    showShimmer(false);
+                    Toast.makeText(BookingListActivity.this, "Gagal mendapatkan data Booking Design! Cek koneksi Internet Anda!", Toast.LENGTH_LONG).show();
+
+                }
+            });
+        }
     }
 
     private void onServiceClickCallback(DesignBookingModel bookingModel) {
@@ -223,6 +317,7 @@ public class BookingListActivity extends AppCompatActivity {
                 Intent intent = new Intent(BookingListActivity.this, DetailBookingActivity.class);
 
                 intent.putExtra("BOOKING_MODEL", bookingModel);
+                intent.putExtra("userType", userType);
                 optionDialog.dismiss();
                 startActivity(intent);
             }

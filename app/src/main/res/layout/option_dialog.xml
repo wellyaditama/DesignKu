@@ -52,5 +52,21 @@
         android:drawableLeft="@drawable/ic_baseline_visibility_24"
         android:padding="16dp"/>
 
+    <TextView
+        android:id="@+id/tv_book"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/tv_view_report"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:text="Booking Jasa Ini"
+        android:textColor="@color/black"
+        android:textAlignment="center"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:layout_margin="8dp"
+        android:drawableLeft="@drawable/baseline_send_24"
+        android:padding="16dp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -20,6 +20,8 @@ public class BookingAdminFragment extends Fragment {
 
     FragmentBookingAdminBinding binding;
 
+    String userType;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +33,9 @@ public class BookingAdminFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         binding = FragmentBookingAdminBinding.inflate(inflater, container, false);
+
+        Bundle bundle = getArguments();
+        userType = bundle.getString("userType");
         return binding.getRoot();
 
 
@@ -44,8 +49,14 @@ public class BookingAdminFragment extends Fragment {
         binding.cvBookingSemua.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(getContext(), BookingListActivity.class));
+                Intent intent = new Intent(getContext(), BookingListActivity.class);
+                intent.putExtra("userType", userType);
+                startActivity(intent);
             }
         });
+
+        if(userType.equals("User")) {
+            binding.tvBookingAll.setText("Daftar Booking Anda");
+        }
     }
 }
