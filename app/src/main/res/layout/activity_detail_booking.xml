@@ -236,6 +236,19 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/cv_detail_booking_photo" />
 
+                <TextView
+                    android:id="@+id/tv_tanggal_pemesanan"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Tanggal Pemesanan"
+                    android:textAlignment="textStart"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tv_nama_user" />
+
 
                 <ImageView
                     android:id="@+id/iv_email_user"
@@ -244,7 +257,7 @@
                     android:layout_marginTop="16dp"
                     android:src="@drawable/ic_baseline_email_24"
                     app:layout_constraintStart_toStartOf="@+id/tv_nama_user"
-                    app:layout_constraintTop_toBottomOf="@id/tv_nama_user"
+                    app:layout_constraintTop_toBottomOf="@id/tv_tanggal_pemesanan"
                     app:tint="@color/primary3" />
 
                 <ImageView
@@ -268,7 +281,7 @@
                     android:textSize="16sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@id/iv_email_user"
-                    app:layout_constraintTop_toBottomOf="@+id/tv_nama_user" />
+                    app:layout_constraintTop_toBottomOf="@+id/tv_tanggal_pemesanan" />
 
                 <TextView
                     android:id="@+id/tv_nomor_telepon_user"

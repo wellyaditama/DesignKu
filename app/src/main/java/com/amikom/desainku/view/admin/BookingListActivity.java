@@ -27,6 +27,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import org.checkerframework.checker.units.qual.A;
@@ -104,7 +105,7 @@ public class BookingListActivity extends AppCompatActivity {
 
 
         if(userType.equals("User")) {
-            FirebaseFirestore.getInstance().collection("booking").whereEqualTo("emailPemesan", FirebaseAuth.getInstance().getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            FirebaseFirestore.getInstance().collection("booking").whereEqualTo("emailPemesan", FirebaseAuth.getInstance().getCurrentUser().getEmail()).orderBy("dateCreated", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     if (!queryDocumentSnapshots.isEmpty()) {
@@ -180,7 +181,7 @@ public class BookingListActivity extends AppCompatActivity {
             });
         } else {
 
-            FirebaseFirestore.getInstance().collection("booking").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            FirebaseFirestore.getInstance().collection("booking").orderBy("dateCreated", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     if (!queryDocumentSnapshots.isEmpty()) {

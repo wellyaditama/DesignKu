@@ -219,6 +219,8 @@ public class DetailBookingActivity extends AppCompatActivity {
                 binding.tvPrice.setText(UtilitiesClass.formatRupiah(harga));
                 binding.tvLamaPengerjaan.setText(String.valueOf(lamapengerjaan) + " Hari");
 
+                binding.tvTanggalPemesanan.setText(designBookingModel.getDateCreated());
+
                 getDataUser(designBookingModel.getEmailPemesan());
             }
         });
