@@ -1,5 +1,8 @@
 package com.amikom.desainku.utility;
 
+import android.content.Intent;
+import android.net.Uri;
+
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -44,4 +47,9 @@ public class UtilitiesClass {
 
         return dateNow;
     }
+
+    public static String[] statusPembayaran = new String[] {"Belum Dibayar", "Sudah Dibayar"};
+    public static String[] statusPengerjaan = new String[] {"Dalam Pengerjaan", "Revisi", "Selesai", "Dibatalkan"};
+
+
 }

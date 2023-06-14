@@ -22,17 +22,19 @@ import android.widget.Toast;
 
 import com.amikom.desainku.R;
 import com.amikom.desainku.adapter.AdapterDesignService;
+import com.amikom.desainku.databinding.DetailServiceBinding;
 import com.amikom.desainku.databinding.FragmentServiceAdminBinding;
 import com.amikom.desainku.databinding.OptionDialogBinding;
 import com.amikom.desainku.model.DesignServiceModel;
+import com.amikom.desainku.utility.UtilitiesClass;
 import com.amikom.desainku.view.admin.AddDesignServiceActivity;
+import com.amikom.desainku.view.admin.BookDesignActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.checkerframework.checker.units.qual.A;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +48,9 @@ public class ServiceAdminFragment extends Fragment {
 
     AdapterDesignService adapterDesignService;
     Dialog optionDialog;
+    Dialog detailService;
 
+    DetailServiceBinding detailServiceBinding;
     OptionDialogBinding optionDialogBinding;
 
     ProgressDialog progressDialog;
@@ -68,8 +72,6 @@ public class ServiceAdminFragment extends Fragment {
         // Inflate the layout for this fragment
         binding = FragmentServiceAdminBinding.inflate(inflater, container, false);
         return binding.getRoot();
-
-
 
     }
 
@@ -95,7 +97,7 @@ public class ServiceAdminFragment extends Fragment {
                         String gambar = s.get("gambar").toString();
 
                         DesignServiceModel dsm = new DesignServiceModel(idJasa
-                                ,namaJasa
+                                , namaJasa
                                 ,keterangan
                                 ,harga
                                 ,lamapengerjaan
@@ -196,6 +198,34 @@ public class ServiceAdminFragment extends Fragment {
                 dialog.show();
             }
         });
+
+        optionDialogBinding.tvViewReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                detailService.show();
+
+                Picasso.get().load(serviceModel.getGambar()).into(detailServiceBinding.ivDetailServicePicture);
+
+                detailServiceBinding.tvNamaJasa.setText(serviceModel.getNamaJasa());
+                detailServiceBinding.tvDescription.setText(serviceModel.getKeterangan());
+                detailServiceBinding.tvPrice.setText(UtilitiesClass.formatRupiah(serviceModel.getHarga()));
+                detailServiceBinding.tvLamaPengerjaan.setText(serviceModel.getLamapengerjaan() + " Hari");
+            }
+        });
+
+        optionDialogBinding.tvUpdateReport.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getContext(), BookDesignActivity.class);
+                intent.putExtra("DESIGN_SERVICE", serviceModel);
+                optionDialog.dismiss();
+
+                startActivity(intent);
+
+            }
+        });
+
+
     }
 
     private void showShimmer(boolean b) {
@@ -229,7 +259,26 @@ public class ServiceAdminFragment extends Fragment {
 
         progressDialog = new ProgressDialog(getContext());
 
-        getDataService();
+        detailService = new Dialog(getContext(), R.style.DialogStyle);
+        detailServiceBinding =DetailServiceBinding.inflate(getLayoutInflater());
+        detailService.setContentView(detailServiceBinding.getRoot());
+        detailServiceBinding.ifvCloseDialog.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                detailService.dismiss();
+            }
+        });
 
+//        getDataService();
+
+
+
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        getDataService();
     }
 }

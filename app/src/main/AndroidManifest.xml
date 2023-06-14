@@ -12,6 +12,18 @@
         android:theme="@style/Theme.Desainku"
         tools:targetApi="31">
         <activity
+            android:name=".view.admin.DetailBookingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.admin.BookingListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.admin.BookDesignActivity"
+            android:exported="false" />
+        <activity
+            android:name=".view.admin.EditDesignServiceActivity"
+            android:exported="false" />
+        <activity
             android:name=".view.admin.DetailDesignServiceActivity"
             android:exported="false" />
         <activity

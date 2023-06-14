@@ -14,7 +14,7 @@ import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.amikom.desainku.R;
-import com.amikom.desainku.databinding.ActivityAddDesignServiceBinding;
+import com.amikom.desainku.databinding.ActivityEditDesignServiceBinding;
 import com.amikom.desainku.model.DesignServiceModel;
 import com.amikom.desainku.utility.UtilitiesClass;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -26,13 +26,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class AddDesignServiceActivity extends AppCompatActivity {
+public class EditDesignServiceActivity extends AppCompatActivity {
 
-    ActivityAddDesignServiceBinding binding;
+    ActivityEditDesignServiceBinding binding;
+
     ProgressDialog progressDialog;
 
     Uri imageUri;
@@ -43,18 +45,17 @@ public class AddDesignServiceActivity extends AppCompatActivity {
     ProgressDialog registerDialog;
     FirebaseFirestore db;
 
+    DesignServiceModel designServiceModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityAddDesignServiceBinding.inflate(getLayoutInflater());
-
+        binding = ActivityEditDesignServiceBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         ketersediaan = "Tersedia";
         registerDialog = new ProgressDialog(this);
         db = FirebaseFirestore.getInstance();
-
-
 
         binding.btnAddPhotoService.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,6 +71,25 @@ public class AddDesignServiceActivity extends AppCompatActivity {
             }
         });
 
+        Intent intent = getIntent();
+
+        designServiceModel = (DesignServiceModel) intent.getSerializableExtra("DESIGN_SERVICE");
+
+        Picasso.get().load(designServiceModel.getGambar()).into(binding.ifvPhotoJasaDesign);
+//
+        binding.tiNamaJasa.setText(designServiceModel.getNamaJasa());
+        binding.tiHargaJasa.setText(String.valueOf(designServiceModel.getHarga()));
+        binding.tiLamaPengerjaan.setText(String.valueOf(designServiceModel.getLamapengerjaan()));
+        binding.tiKeteranganJasa.setText(designServiceModel.getKeterangan());
+
+
+        if(designServiceModel.getKetersediaan().equals("Tersedia")) {
+            binding.rbKetersediaanTersedia.setChecked(true);
+            ketersediaan = "Tersedia";
+        } else {
+            binding.rbKetersediaanTidakTersedia.setChecked(true);
+            ketersediaan = "Tidak Tersedia";
+        }
 
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -86,7 +106,7 @@ public class AddDesignServiceActivity extends AppCompatActivity {
 
                 if (imageUri == null) {
                     isFormValid = false;
-                    Toast.makeText(AddDesignServiceActivity.this, "Mohon pilih Foto Jasa Design Anda!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(EditDesignServiceActivity.this, "Mohon pilih Foto Jasa Design Anda!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
@@ -115,7 +135,7 @@ public class AddDesignServiceActivity extends AppCompatActivity {
                 }
 
                 if(isFormValid) {
-                    registerDialog.setMessage("Menambahkan Jasa Design Baru...");
+                    registerDialog.setMessage("Mengubah Jasa Design...");
                     registerDialog.setTitle("Mohon Bersabar.");
                     registerDialog.setCanceledOnTouchOutside(false);
                     registerDialog.show();
@@ -139,13 +159,13 @@ public class AddDesignServiceActivity extends AppCompatActivity {
                                             String downloadUrlImage = task.getResult().toString();
                                             downloadUrl = downloadUrlImage;
 
-                                            sendDataToFirestore(namaJasa, keterangan, harga, lamapengerjaan, jumlahPemesanan);
+                                            sendDataToFirestore(namaJasa, keterangan, harga, lamapengerjaan, jumlahPemesanan, designServiceModel.getIdJasa());
 
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(AddDesignServiceActivity.this, "File berhasil di upload namun tidak bisa mendapatkan link download!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(EditDesignServiceActivity.this, "File berhasil di upload namun tidak bisa mendapatkan link download!", Toast.LENGTH_SHORT).show();
                                             registerDialog.dismiss();
                                         }
                                     });
@@ -164,12 +184,22 @@ public class AddDesignServiceActivity extends AppCompatActivity {
 
             }
         });
+
     }
 
-    private void sendDataToFirestore(String namaJasa, String keterangan, String harga, String lamapengerjaan, int jumlahPemesanan) {
+
+
+    private void chooseImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 100);
+    }
+
+    private void sendDataToFirestore(String namaJasa, String keterangan, String harga, String lamapengerjaan, int jumlahPemesanan, String idJasa) {
         String date = UtilitiesClass.getDateNow();
 
-        String idJasa = UtilitiesClass.generateRandomString(8);
+
 
         DesignServiceModel dsm = new DesignServiceModel(idJasa, namaJasa, keterangan, Integer.parseInt(harga), Integer.parseInt(lamapengerjaan), ketersediaan, jumlahPemesanan, date, downloadUrl);
 
@@ -178,24 +208,17 @@ public class AddDesignServiceActivity extends AppCompatActivity {
             public void onSuccess(Void unused) {
                 registerDialog.dismiss();
                 Log.d("FIRESTORE", "DocumentSnapshot added with document "+idJasa);
-                Toast.makeText(AddDesignServiceActivity.this, "Jasa Desain baru berhasil dibuat!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditDesignServiceActivity.this, "Jasa Desain baru berhasil dibuat!", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 registerDialog.dismiss();
-                Toast.makeText(AddDesignServiceActivity.this, "Jasa Desain gagal dibuat! Cek koneksi Internet Anda!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(EditDesignServiceActivity.this, "Jasa Desain gagal dibuat! Cek koneksi Internet Anda!", Toast.LENGTH_SHORT).show();
                 Log.e("FIRESTORE", "onFailure: gagal upload data jasa ke cloud firestore",e );
             }
         });
-    }
-
-    private void chooseImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, 100);
     }
 
     @Override

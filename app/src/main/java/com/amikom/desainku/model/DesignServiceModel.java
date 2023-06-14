@@ -98,4 +98,5 @@ public class DesignServiceModel implements Serializable {
     public void setGambar(String gambar) {
         this.gambar = gambar;
     }
+
 }
