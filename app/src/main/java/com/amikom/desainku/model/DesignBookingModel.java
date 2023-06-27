@@ -14,6 +14,10 @@ public class DesignBookingModel implements Serializable {
     private String statusPengerjaan;
     private String dateCreated;
 
+    private String harga;
+
+    private String dibayarkan;
+
     public String getStatusPembayaran() {
         return statusPembayaran;
     }
@@ -30,7 +34,7 @@ public class DesignBookingModel implements Serializable {
         this.statusPengerjaan = statusPengerjaan;
     }
 
-    public DesignBookingModel(String idJasa, String idBooking, String emailPemesan, String namaPemesan, String noHpPemesan, String keterangan, String statusPembayaran, String statusPengerjaan, String dateCreated) {
+    public DesignBookingModel(String idJasa, String idBooking, String emailPemesan, String namaPemesan, String noHpPemesan, String keterangan, String statusPembayaran, String statusPengerjaan, String dateCreated, String harga, String dibayarkan) {
         this.idJasa = idJasa;
         this.idBooking = idBooking;
         this.emailPemesan = emailPemesan;
@@ -40,6 +44,8 @@ public class DesignBookingModel implements Serializable {
         this.statusPembayaran = statusPembayaran;
         this.statusPengerjaan = statusPengerjaan;
         this.dateCreated = dateCreated;
+        this.harga = harga;
+        this.dibayarkan = dibayarkan;
     }
 
     public String getIdJasa() {
@@ -96,5 +102,21 @@ public class DesignBookingModel implements Serializable {
 
     public void setIdBooking(String idBooking) {
         this.idBooking = idBooking;
+    }
+
+    public String getHarga() {
+        return harga;
+    }
+
+    public void setHarga(String harga) {
+        this.harga = harga;
+    }
+
+    public String getDibayarkan() {
+        return dibayarkan;
+    }
+
+    public void setDibayarkan(String dibayarkan) {
+        this.dibayarkan = dibayarkan;
     }
 }

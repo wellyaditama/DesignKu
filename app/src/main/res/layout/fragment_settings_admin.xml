@@ -76,6 +76,16 @@
             android:textSize="12sp"
             />
 
+        <Button
+            android:id="@+id/btn_edit_profile"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:text="EDIT PROFIL"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@id/cv_user_profile" />
+
         <androidx.cardview.widget.CardView
             android:id="@+id/cv_type_user"
             android:layout_width="match_parent"
@@ -89,7 +99,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cv_user_profile">
+            app:layout_constraintTop_toBottomOf="@id/btn_edit_profile">
+
 
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -125,8 +136,8 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="28dp"
             android:text="LOGOUT"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_marginBottom="24dp"
+            app:layout_constraintBottom_toBottomOf="parent"/>
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

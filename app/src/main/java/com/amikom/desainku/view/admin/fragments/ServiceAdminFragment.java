@@ -30,6 +30,10 @@ import com.amikom.desainku.utility.UtilitiesClass;
 import com.amikom.desainku.view.admin.AddDesignServiceActivity;
 import com.amikom.desainku.view.admin.BookDesignActivity;
 import com.amikom.desainku.view.admin.EditDesignServiceActivity;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -79,8 +83,6 @@ public class ServiceAdminFragment extends Fragment {
 
 
         return binding.getRoot();
-
-
     }
 
     private void getDataService() {
@@ -267,6 +269,15 @@ public class ServiceAdminFragment extends Fragment {
                 startActivity(new Intent(getContext(), AddDesignServiceActivity.class));
             }
         });
+
+        MobileAds.initialize(getContext(), new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
+        AdRequest adRequest = new AdRequest.Builder().build();
+        binding.adView.loadAd(adRequest);
 
 
 

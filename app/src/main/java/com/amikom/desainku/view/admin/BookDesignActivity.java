@@ -11,17 +11,13 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
-import com.amikom.desainku.R;
 import com.amikom.desainku.databinding.ActivityBookDesignBinding;
 import com.amikom.desainku.model.DesignBookingModel;
 import com.amikom.desainku.model.DesignServiceModel;
 import com.amikom.desainku.model.UserModel;
 import com.amikom.desainku.utility.UtilitiesClass;
-import com.amikom.desainku.view.auth.LoginActivity;
-import com.amikom.desainku.view.auth.RegisterActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.FirebaseApiNotAvailableException;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -84,7 +80,7 @@ public class BookDesignActivity extends AppCompatActivity {
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String nama = binding.tiNamaJasa.getText().toString();
+                String nama = binding.tiIdBooking.getText().toString();
                 String email = binding.tiEmailJasa.getText().toString();
                 String nohp = binding.tiNoHp.getText().toString();
                 String keterangan = binding.tiKeteranganJasa.getText().toString();
@@ -93,7 +89,7 @@ public class BookDesignActivity extends AppCompatActivity {
 
                 if (nama.isEmpty()) {
                     isFormValid = false;
-                    binding.tiNamaJasa.setError("Field Nama Tidak Boleh Kosong!");
+                    binding.tiIdBooking.setError("Field Nama Tidak Boleh Kosong!");
                     return;
                 }
 
@@ -129,7 +125,7 @@ public class BookDesignActivity extends AppCompatActivity {
                     String date = UtilitiesClass.getDateNow();
                     String idBooking = UtilitiesClass.generateRandomString(10);
 
-                    DesignBookingModel designBookingModel = new DesignBookingModel(designServiceModel.getIdJasa(), idBooking, email, nama, nohp, keterangan, "1", "1", date );
+                    DesignBookingModel designBookingModel = new DesignBookingModel(designServiceModel.getIdJasa(), idBooking, email, nama, nohp, keterangan, "1", "1", date, String.valueOf(designServiceModel.getHarga()), "0");
 
                     FirebaseFirestore.getInstance().collection("booking").document(idBooking).set(designBookingModel).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
@@ -173,7 +169,7 @@ public class BookDesignActivity extends AppCompatActivity {
 
                 userModel = new UserModel(name, phoneNumber, email, photoUrl, dateCreated, userType);
 
-                binding.tiNamaJasa.setText(name);
+                binding.tiIdBooking.setText(name);
                 binding.tiEmailJasa.setText(email);
                 binding.tiNoHp.setText(phoneNumber);
             }

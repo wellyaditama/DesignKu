@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:minHeight="100dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:cardCornerRadius="16dp"
+    android:layout_margin="8dp">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/cl_item_recycler"
+        android:minHeight="100dp">
+
+
+        <ImageView
+            android:id="@+id/iv_list_multi_image"
+            android:layout_width="80dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:src="@drawable/ic_baseline_account_circle_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/guideline2"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ImageView
+            android:id="@+id/iv_indicator"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@color/primary4"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25"/>
+
+        <TextView
+            android:id="@+id/tv_list_multi_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/poppins_regular"
+            android:maxLines="1"
+            android:text="Test 123"
+            android:textFontWeight="600"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_indicator"
+            app:layout_constraintStart_toEndOf="@id/guideline2"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_list_multi_subtitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:text="Lorem ipsum dolor sit amet constitutur. Sit amet cuntoroulinu"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline2"
+            app:layout_constraintTop_toBottomOf="@id/tv_list_multi_title" />
+
+        <TextView
+            android:id="@+id/tv_list_multi_subtitle1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:text="Lorem ipsum dolor sit amet constitutur. Sit amet cuntoroulinu Sit amet cuntoroulinuSit amet cuntoroulinuSit amet cuntoroulinu"
+            android:textSize="12sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@id/guideline2"
+            app:layout_constraintTop_toBottomOf="@id/tv_list_multi_subtitle" />
+
+        <TextView
+            android:id="@+id/tv_price"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="12dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/poppins_regular"
+            android:maxLines="1"
+            android:text="Sudah Dibayar"
+            android:textFontWeight="600"
+            android:textSize="8sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_price"
+            app:layout_constraintStart_toEndOf="@id/iv_price"
+            app:layout_constraintTop_toBottomOf="@id/tv_list_multi_subtitle1"></TextView>
+
+        <TextView
+            android:id="@+id/tv_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="12dp"
+            android:ellipsize="end"
+            android:fontFamily="@font/poppins_regular"
+            android:maxLines="1"
+            android:text="Dalam Pengerjaan"
+            android:textFontWeight="600"
+            android:textSize="8sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_time"
+            app:layout_constraintStart_toEndOf="@+id/iv_time"
+            app:layout_constraintTop_toBottomOf="@id/tv_list_multi_subtitle1"></TextView>
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/iv_waktu"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/baseline_monetization_on_24"
+            android:tint="@color/fontColor"
+            android:visibility="gone"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/guideline2"
+            app:layout_constraintTop_toBottomOf="@id/iv_price"
+            android:layout_marginTop="12dp"/>
+
+        <TextView
+            android:id="@+id/tv_list_multi_waktu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="12dp"
+            android:text="12:00 - 15:00"
+            android:visibility="gone"
+            android:textSize="12sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:fontFamily="@font/poppins_regular"
+            android:textFontWeight="600"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintTop_toBottomOf="@id/iv_price"
+            app:layout_constraintStart_toEndOf="@id/iv_waktu"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/iv_price"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/baseline_monetization_on_24"
+            android:tint="@color/fontColor"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/guideline2"
+            app:layout_constraintTop_toBottomOf="@id/tv_list_multi_subtitle1"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="12dp"/>
+
+        <androidx.constraintlayout.utils.widget.ImageFilterView
+            android:id="@+id/iv_time"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:src="@drawable/ic_baseline_date_range_24"
+            android:tint="@color/fontColor"
+            android:layout_marginStart="8dp"
+            app:layout_constraintStart_toEndOf="@id/tv_price"
+            app:layout_constraintTop_toBottomOf="@id/tv_list_multi_subtitle1"
+            android:layout_marginTop="12dp"/>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.cardview.widget.CardView>

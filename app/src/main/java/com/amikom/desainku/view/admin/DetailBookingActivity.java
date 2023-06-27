@@ -87,7 +87,21 @@ public class DetailBookingActivity extends AppCompatActivity {
         if(userType.equals("User")) {
             binding.btnChangeStatus.setVisibility(View.GONE);
             binding.btnChangeStatusPembayaran.setVisibility(View.GONE);
+            binding.btnUploadBuktiPembayaran.setVisibility(View.VISIBLE);
+        } else {
+            binding.btnUploadBuktiPembayaran.setVisibility(View.VISIBLE);
+            binding.btnUploadBuktiPembayaran.setText("LIHAT DAFTAR BUKTI PEMBAYARAN");
         }
+
+        binding.btnUploadBuktiPembayaran.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent1 = new Intent(DetailBookingActivity.this, DaftarBuktiPembayaranActivity.class);
+                intent1.putExtra("ID_BOOKING", designBookingModel.getIdBooking());
+                intent1.putExtra("ROLE", userType);
+                startActivity(intent1);
+            }
+        });
 
 
         binding.btnChangeStatus.setOnClickListener(new View.OnClickListener() {

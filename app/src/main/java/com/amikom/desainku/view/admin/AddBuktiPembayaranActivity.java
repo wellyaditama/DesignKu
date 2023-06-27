@@ -10,11 +10,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.RadioButton;
 import android.widget.Toast;
 
 import com.amikom.desainku.R;
-import com.amikom.desainku.databinding.ActivityEditDesignServiceBinding;
+import com.amikom.desainku.databinding.ActivityAddBuktiPembayaranBinding;
+import com.amikom.desainku.model.BuktiPembayaranModel;
 import com.amikom.desainku.model.DesignServiceModel;
 import com.amikom.desainku.utility.UtilitiesClass;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -22,47 +22,36 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class EditDesignServiceActivity extends AppCompatActivity {
+public class AddBuktiPembayaranActivity extends AppCompatActivity {
 
-    ActivityEditDesignServiceBinding binding;
+    ActivityAddBuktiPembayaranBinding binding;
 
-    ProgressDialog progressDialog;
+    String idBooking;
 
     Uri imageUri;
     String downloadUrl;
     StorageReference storageReference;
 
-    String ketersediaan;
     ProgressDialog registerDialog;
     FirebaseFirestore db;
-
-    DesignServiceModel designServiceModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        binding = ActivityEditDesignServiceBinding.inflate(getLayoutInflater());
+        binding = ActivityAddBuktiPembayaranBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        ketersediaan = "Tersedia";
         registerDialog = new ProgressDialog(this);
         db = FirebaseFirestore.getInstance();
-
-        binding.btnAddPhotoService.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                chooseImage();
-            }
-        });
 
         binding.ivClose.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -71,71 +60,50 @@ public class EditDesignServiceActivity extends AppCompatActivity {
             }
         });
 
+        binding.btnAddPhotoService.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chooseImage();
+            }
+        });
+
         Intent intent = getIntent();
 
-        designServiceModel = (DesignServiceModel) intent.getSerializableExtra("DESIGN_SERVICE");
-
-        Picasso.get().load(designServiceModel.getGambar()).into(binding.ifvPhotoJasaDesign);
-//
-        binding.tiIdBooking.setText(designServiceModel.getNamaJasa());
-        binding.tiHargaJasa.setText(String.valueOf(designServiceModel.getHarga()));
-        binding.tiLamaPengerjaan.setText(String.valueOf(designServiceModel.getLamapengerjaan()));
-        binding.tiKeteranganJasa.setText(designServiceModel.getKeterangan());
+        idBooking = intent.getStringExtra("ID_BOOKING");
 
 
-        if(designServiceModel.getKetersediaan().equals("Tersedia")) {
-            binding.rbKetersediaanTersedia.setChecked(true);
-            ketersediaan = "Tersedia";
-        } else {
-            binding.rbKetersediaanTidakTersedia.setChecked(true);
-            ketersediaan = "Tidak Tersedia";
-        }
+        binding.tiIdBooking.setText(idBooking);
+        binding.tiEmailPengguna.setText(FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
         binding.btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String idJasa;
-                String namaJasa = binding.tiIdBooking.getText().toString();
-                String keterangan = binding.tiKeteranganJasa.getText().toString();
-                String harga = binding.tiHargaJasa.getText().toString();
-                String lamapengerjaan = binding.tiLamaPengerjaan.getText().toString();
-                int jumlahPemesanan = 0;
-                String dateCreated;
+                String keteranganPembayaran = binding.tiKeteranganJasa.getText().toString();
+                String pembayaran = binding.tiHargaJasa.getText().toString();
 
                 boolean isFormValid = true;
 
                 if (imageUri == null) {
                     isFormValid = false;
-                    Toast.makeText(EditDesignServiceActivity.this, "Mohon pilih Foto Jasa Design Anda!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(AddBuktiPembayaranActivity.this, "Mohon pilih Foto Bukti Pembayaran!", Toast.LENGTH_SHORT).show();
                     return;
                 }
 
-                if(namaJasa.isEmpty()) {
+                if(keteranganPembayaran.isEmpty()) {
                     isFormValid = false;
-                    binding.tiIdBooking.setError("Field ini harus diisi!");
+                    binding.tfKeteranganPembayaran.setError("Field ini harus diisi!");
                     return;
                 }
 
-                if(keterangan.isEmpty()) {
-                    isFormValid = false;
-                    binding.tiKeteranganJasa.setError("Field ini harus diisi!");
-                    return;
-                }
-
-                if(harga.isEmpty()) {
+                if(pembayaran.isEmpty()) {
                     isFormValid = false;
                     binding.tiHargaJasa.setError("Field ini harus diisi!");
                     return;
                 }
 
-                if(lamapengerjaan.isEmpty()) {
-                    isFormValid = false;
-                    binding.tiLamaPengerjaan.setError("Field ini harus diisi!");
-                    return;
-                }
 
                 if(isFormValid) {
-                    registerDialog.setMessage("Mengubah Jasa Design...");
+                    registerDialog.setMessage("Mengupload Bukti Pembayaran...");
                     registerDialog.setTitle("Mohon Bersabar.");
                     registerDialog.setCanceledOnTouchOutside(false);
                     registerDialog.show();
@@ -144,7 +112,7 @@ public class EditDesignServiceActivity extends AppCompatActivity {
                     Date now = new Date();
                     String filename = dateFormat.format(now);
 
-                    storageReference = FirebaseStorage.getInstance().getReference("fotoJasaDesign" + filename);
+                    storageReference = FirebaseStorage.getInstance().getReference("buktiPembayaran" + filename);
 
                     storageReference.putFile(imageUri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
@@ -159,13 +127,13 @@ public class EditDesignServiceActivity extends AppCompatActivity {
                                             String downloadUrlImage = task.getResult().toString();
                                             downloadUrl = downloadUrlImage;
 
-                                            sendDataToFirestore(namaJasa, keterangan, harga, lamapengerjaan, jumlahPemesanan, designServiceModel.getIdJasa());
+                                            sendDataToFirestore(keteranganPembayaran, pembayaran);
 
                                         }
                                     }).addOnFailureListener(new OnFailureListener() {
                                         @Override
                                         public void onFailure(@NonNull Exception e) {
-                                            Toast.makeText(EditDesignServiceActivity.this, "File berhasil di upload namun tidak bisa mendapatkan link download!", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(AddBuktiPembayaranActivity.this, "File berhasil di upload namun tidak bisa mendapatkan link download!", Toast.LENGTH_SHORT).show();
                                             registerDialog.dismiss();
                                         }
                                     });
@@ -185,40 +153,39 @@ public class EditDesignServiceActivity extends AppCompatActivity {
             }
         });
 
+
     }
 
-
-
-    private void chooseImage() {
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, 100);
-    }
-
-    private void sendDataToFirestore(String namaJasa, String keterangan, String harga, String lamapengerjaan, int jumlahPemesanan, String idJasa) {
+    private void sendDataToFirestore(String keteranganPembayaran, String pembayaran) {
         String date = UtilitiesClass.getDateNow();
 
+        String idPembayaran = UtilitiesClass.generateRandomString(8);
 
+        BuktiPembayaranModel buktiPembayaranModel = new BuktiPembayaranModel(idBooking, idPembayaran, downloadUrl, pembayaran, keteranganPembayaran, FirebaseAuth.getInstance().getCurrentUser().getEmail(), date, "0");
 
-        DesignServiceModel dsm = new DesignServiceModel(idJasa, namaJasa, keterangan, Integer.parseInt(harga), Integer.parseInt(lamapengerjaan), ketersediaan, jumlahPemesanan, date, downloadUrl);
-
-        FirebaseFirestore.getInstance().collection("jasaDesign").document(idJasa).set(dsm).addOnSuccessListener(new OnSuccessListener<Void>() {
+        FirebaseFirestore.getInstance().collection("buktiPembayaran").document(idPembayaran).set(buktiPembayaranModel).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void unused) {
                 registerDialog.dismiss();
-                Log.d("FIRESTORE", "DocumentSnapshot added with document "+idJasa);
-                Toast.makeText(EditDesignServiceActivity.this, "Jasa Desain baru berhasil dibuat!", Toast.LENGTH_SHORT).show();
+                Log.d("FIRESTORE", "DocumentSnapshot added with document "+idPembayaran);
+                Toast.makeText(AddBuktiPembayaranActivity.this, "Bukti Pembayaran Berhasil Dikirim!", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 registerDialog.dismiss();
-                Toast.makeText(EditDesignServiceActivity.this, "Jasa Desain gagal dibuat! Cek koneksi Internet Anda!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(AddBuktiPembayaranActivity.this, "Bukti Pembayaran Gagal Dikirim! Cek koneksi Internet anda!", Toast.LENGTH_SHORT).show();
                 Log.e("FIRESTORE", "onFailure: gagal upload data jasa ke cloud firestore",e );
             }
         });
+    }
+
+    private void chooseImage() {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, 100);
     }
 
     @Override
@@ -229,24 +196,5 @@ public class EditDesignServiceActivity extends AppCompatActivity {
             imageUri = data.getData();
             binding.ifvPhotoJasaDesign.setImageURI(imageUri);
         }
-    }
-
-    public void onRadioKetersediaanClicked(View view) {
-        boolean checked = ((RadioButton) view).isChecked();
-
-        switch (view.getId()) {
-            case R.id.rb_ketersediaan_tersedia:
-                if (checked)
-                    // Pirates are the best
-                    ketersediaan = "Tersedia";
-
-                break;
-            case R.id.rb_ketersediaan_tidak_tersedia:
-                if (checked)
-                    // Ninjas rule
-                    ketersediaan = "Tidak Tersedia";
-                break;
-        }
-
     }
 }

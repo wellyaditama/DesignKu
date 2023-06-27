@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.amikom.desainku.R;
 import com.amikom.desainku.adapter.AdapterBookingService;
-import com.amikom.desainku.adapter.AdapterDesignService;
 import com.amikom.desainku.databinding.ActivityBookingListBinding;
 import com.amikom.desainku.databinding.OptionDialogBinding;
 import com.amikom.desainku.model.DesignBookingModel;
@@ -29,8 +28,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
-
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,9 +100,11 @@ public class BookingListActivity extends AppCompatActivity {
 
         designBookingModels.clear();
 
+        Log.d("TAG", "Email Pemesan : " + FirebaseAuth.getInstance().getCurrentUser().getEmail());
 
         if(userType.equals("User")) {
             FirebaseFirestore.getInstance().collection("booking").whereEqualTo("emailPemesan", FirebaseAuth.getInstance().getCurrentUser().getEmail()).orderBy("dateCreated", Query.Direction.DESCENDING).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+//            FirebaseFirestore.getInstance().collection("booking").whereEqualTo("emailPemesan", FirebaseAuth.getInstance().getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     if (!queryDocumentSnapshots.isEmpty()) {
@@ -121,6 +120,8 @@ public class BookingListActivity extends AppCompatActivity {
                             String statusPembayaran = s.get("statusPembayaran").toString();
                             String statusPengerjaan = s.get("statusPengerjaan").toString();
                             String dateCreated = s.get("dateCreated").toString();
+                            String harga = s.get("harga").toString();
+                            String dibayarkan = s.get("dibayarkan").toString();
 
                             DesignBookingModel dsm = new DesignBookingModel(
                                     idJasa,
@@ -131,8 +132,8 @@ public class BookingListActivity extends AppCompatActivity {
                                     keterangan,
                                     statusPembayaran,
                                     statusPengerjaan,
-                                    dateCreated
-                            );
+                                    dateCreated,
+                                    harga, dibayarkan);
 
                             designBookingModels.add(dsm);
                         }
@@ -197,6 +198,8 @@ public class BookingListActivity extends AppCompatActivity {
                             String statusPembayaran = s.get("statusPembayaran").toString();
                             String statusPengerjaan = s.get("statusPengerjaan").toString();
                             String dateCreated = s.get("dateCreated").toString();
+                            String harga = s.get("harga").toString();
+                            String dibayarkan = s.get("dibayarkan").toString();
 
                             DesignBookingModel dsm = new DesignBookingModel(
                                     idJasa,
@@ -207,8 +210,9 @@ public class BookingListActivity extends AppCompatActivity {
                                     keterangan,
                                     statusPembayaran,
                                     statusPengerjaan,
-                                    dateCreated
-                            );
+                                    dateCreated,
+                                    harga,
+                                    dibayarkan);
 
                             designBookingModels.add(dsm);
                         }

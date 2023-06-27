@@ -8,7 +8,9 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.amikom.desainku.R;
@@ -39,6 +41,8 @@ public class LoginActivity extends AppCompatActivity {
     DialogForgotPasswordBinding dialogForgotPasswordBinding;
     Dialog dialogForgotPassword;
 
+    TextView tvLupaPassword;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,51 +61,71 @@ public class LoginActivity extends AppCompatActivity {
 
         registerDialog = new ProgressDialog(this);
 
-        binding.tvLupaPassword.setOnClickListener(new View.OnClickListener() {
+        tvLupaPassword = (TextView) findViewById(R.id.tv_lupa_passwordsss);
+
+        tvLupaPassword.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String forgotEmail = dialogForgotPasswordBinding.tiForgotEmail.getText().toString();
 
-                boolean isValid = true;
+                dialogForgotPassword.show();
 
-                if (forgotEmail.isEmpty()) {
-                    isValid = false;
-                    dialogForgotPasswordBinding.tiForgotEmail.setError("Field ini harus diisi!");
-                }
+                dialogForgotPasswordBinding.ifvCloseShowroom.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        dialogForgotPassword.dismiss();
+                    }
+                });
 
-                if (!forgotEmail.matches(emailPattern)) {
-                    isValid = false;
-                    dialogForgotPasswordBinding.tiForgotEmail.setError("Isi dengan email yang valid!");
-                }
+                dialogForgotPasswordBinding.btnDialogSendForgotPassword.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
 
-                if (isValid) {
-                    ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
-                    progressDialog.setTitle("Mohon tunggu");
-                    progressDialog.setMessage("Mengirim Email Reset Password...");
-                    progressDialog.setCanceledOnTouchOutside(false);
+                        String forgotEmail = dialogForgotPasswordBinding.tiForgotEmail.getText().toString();
 
-                    progressDialog.show();
+                        boolean isValid = true;
 
-                    FirebaseAuth.getInstance().sendPasswordResetEmail(forgotEmail).addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void unused) {
-                            progressDialog.dismiss();
-                            dialogForgotPassword.dismiss();
-
-                            Toast.makeText(LoginActivity.this, "Berhasil mengirimkan form lupa password ke email anda!", Toast.LENGTH_SHORT).show();
+                        if (forgotEmail.isEmpty()) {
+                            isValid = false;
+                            dialogForgotPasswordBinding.tiForgotEmail.setError("Field ini harus diisi!");
                         }
-                    }).addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            progressDialog.dismiss();
-                            dialogForgotPassword.dismiss();
 
-                            Toast.makeText(LoginActivity.this, "Gagal mengirimkan form lupa password, cek koneksi internet anda!", Toast.LENGTH_SHORT).show();
+                        if (!forgotEmail.matches(emailPattern)) {
+                            isValid = false;
+                            dialogForgotPasswordBinding.tiForgotEmail.setError("Isi dengan email yang valid!");
                         }
-                    });
-                }
+
+                        if (isValid) {
+                            ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
+                            progressDialog.setTitle("Mohon tunggu");
+                            progressDialog.setMessage("Mengirim Email Reset Password...");
+                            progressDialog.setCanceledOnTouchOutside(false);
+
+                            progressDialog.show();
+
+                            FirebaseAuth.getInstance().sendPasswordResetEmail(forgotEmail).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void unused) {
+                                    progressDialog.dismiss();
+                                    dialogForgotPassword.dismiss();
+
+                                    Toast.makeText(LoginActivity.this, "Berhasil mengirimkan form lupa password ke email anda!", Toast.LENGTH_SHORT).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    progressDialog.dismiss();
+                                    dialogForgotPassword.dismiss();
+
+                                    Toast.makeText(LoginActivity.this, "Gagal mengirimkan form lupa password, cek koneksi internet anda!", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                });
+
             }
         });
+
 
         if (mUser != null) {
             registerDialog.setMessage("Mohon tunggu...");
@@ -203,7 +227,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intentAdmin = new Intent(LoginActivity.this, HomeAdminActivity.class);
         Intent intentUser = new Intent(LoginActivity.this, HomeUserActivity.class);
 
-        if(userType.equals("User")) {
+        if (userType.equals("User")) {
             startActivity(intentUser);
             finish();
         } else {

@@ -75,7 +75,7 @@ public class AddDesignServiceActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String idJasa;
-                String namaJasa = binding.tiNamaJasa.getText().toString();
+                String namaJasa = binding.tiIdBooking.getText().toString();
                 String keterangan = binding.tiKeteranganJasa.getText().toString();
                 String harga = binding.tiHargaJasa.getText().toString();
                 String lamapengerjaan = binding.tiLamaPengerjaan.getText().toString();
@@ -92,7 +92,7 @@ public class AddDesignServiceActivity extends AppCompatActivity {
 
                 if(namaJasa.isEmpty()) {
                     isFormValid = false;
-                    binding.tiNamaJasa.setError("Field ini harus diisi!");
+                    binding.tiIdBooking.setError("Field ini harus diisi!");
                     return;
                 }
 
