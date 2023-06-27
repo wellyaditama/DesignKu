@@ -16,6 +16,7 @@ import com.amikom.desainku.R;
 import com.amikom.desainku.databinding.ActivityAddBuktiPembayaranBinding;
 import com.amikom.desainku.model.BuktiPembayaranModel;
 import com.amikom.desainku.model.DesignServiceModel;
+import com.amikom.desainku.model.UserModel;
 import com.amikom.desainku.utility.UtilitiesClass;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -23,6 +24,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -43,6 +45,8 @@ public class AddBuktiPembayaranActivity extends AppCompatActivity {
 
     ProgressDialog registerDialog;
     FirebaseFirestore db;
+
+    UserModel userModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +70,8 @@ public class AddBuktiPembayaranActivity extends AppCompatActivity {
                 chooseImage();
             }
         });
+
+
 
         Intent intent = getIntent();
 
@@ -153,6 +159,12 @@ public class AddBuktiPembayaranActivity extends AppCompatActivity {
             }
         });
 
+        registerDialog.setMessage("Mengambil Data...");
+        registerDialog.setTitle("Mohon Bersabar.");
+        registerDialog.setCanceledOnTouchOutside(false);
+        registerDialog.show();
+
+        getUserData();
 
     }
 
@@ -169,7 +181,9 @@ public class AddBuktiPembayaranActivity extends AppCompatActivity {
                 registerDialog.dismiss();
                 Log.d("FIRESTORE", "DocumentSnapshot added with document "+idPembayaran);
                 Toast.makeText(AddBuktiPembayaranActivity.this, "Bukti Pembayaran Berhasil Dikirim!", Toast.LENGTH_SHORT).show();
+
                 finish();
+                callOwnerViaWhatsapp(buktiPembayaranModel);
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -196,5 +210,44 @@ public class AddBuktiPembayaranActivity extends AppCompatActivity {
             imageUri = data.getData();
             binding.ifvPhotoJasaDesign.setImageURI(imageUri);
         }
+    }
+
+    private void getUserData() {
+        db.collection("users").document(FirebaseAuth.getInstance().getCurrentUser().getEmail()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String name = documentSnapshot.get("name").toString();
+                String phoneNumber = documentSnapshot.get("phoneNumber").toString();
+                String email = documentSnapshot.get("email").toString();
+                String photoUrl = documentSnapshot.get("photoUrl").toString();
+                String dateCreated = documentSnapshot.get("dateCreated").toString();
+                String userType = documentSnapshot.get("userType").toString();
+
+                registerDialog.dismiss();
+
+                userModel = new UserModel(name, phoneNumber, email, photoUrl, dateCreated, userType);
+            }
+        });
+    }
+
+    private void callOwnerViaWhatsapp(BuktiPembayaranModel buktiPembayaranModel) {
+        String message = "Hi kak, saya mau Konfirmasi Pembayaran Jasa Dengan Detail Sebagai Berikut : " +
+                "\n\nDetail Pemesan : " +
+                "\n Nama : " + userModel.getName() + "" +
+                "\n Email : " + userModel.getEmail() + "" +
+                "\n No HP : " + userModel.getPhoneNumber() +"\n" +
+                "\n\nDetail Bukti Pembayaran : " + "\n" +
+                "\n ID Pembayaran : " + buktiPembayaranModel.getIdPembayaran() + "" +
+                "\n ID Booking : " + buktiPembayaranModel.getIdBooking() + "" +
+                "\n Jumlah Yang Dibayarkan : " + UtilitiesClass.formatRupiah(Integer.parseInt(buktiPembayaranModel.getPembayaran())) + "" +
+                "\n Tanggal / Waktu Pembayaran : " + buktiPembayaranModel.getDateCreated()+  "" +
+                "\n Keterangan Tambahan : " + buktiPembayaranModel.getKeteranganPembayaran() + "" +
+                "\n\n Mohon segera dikonfirmasi pembayarannya terima kasih.";
+
+
+        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("https://api.whatsapp.com/send?phone=" + "+6285942104143" +
+                "&text=" + message));
+
+        startActivity(i);
     }
 }
